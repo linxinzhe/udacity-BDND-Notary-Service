@@ -8,6 +8,7 @@ const session = require('express-session');
 
 const indexRouter = require('./routes/index');
 const blockRouter = require('./routes/block');
+const starsRouter = require('./routes/stars');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(session({
 
 app.use('/', indexRouter);
 app.use('/block', blockRouter);
+app.use('/stars', starsRouter);
 
 // init blockchain
 simpleChain.createGenesisBlock();

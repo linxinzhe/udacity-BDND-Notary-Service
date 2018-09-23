@@ -11,8 +11,12 @@ router.get('/:blockHeight', function (req, res, next) {
     return
   }
 
-  simpleChain.Blockchain.getBlock(blockHeight).then((jsonStr) => {
-    res.send(jsonStr);
+  simpleChain.Blockchain.getBlock(blockHeight).then((block) => {
+    const storyEncoded = block.body.star.story;
+    const storyDecoded = Buffer.from(storyEncoded, 'hex').toString('utf8');
+    block.body.star.storyDecoded = storyDecoded;
+
+    res.send(block);
   });
 });
 
