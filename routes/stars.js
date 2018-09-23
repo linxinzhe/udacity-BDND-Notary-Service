@@ -22,6 +22,16 @@ router.get('/hash::hash', function (req, res, next) {
     return;
   }
 
+  let length = 0;
+  simpleChain.db.createReadStream().on('data', (data) => {
+    const block = JSON.parse(data.value);
+    if (block.hash == hash) {
+      res.send(block);
+    }
+  }).on('error', (err) => {
+    console.log('Unable to read data stream!', err);
+  }).on('close', () => {
+  });
 });
 
 module.exports = router;

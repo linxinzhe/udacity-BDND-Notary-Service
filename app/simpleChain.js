@@ -26,7 +26,7 @@ exports.getDataToLevelDBLength = function getDataToLevelDBLength() {
       resolve(length);
     });
   });
-}
+};
 
 // Get data from levelDB with key
 function getLevelDBData(key) {
