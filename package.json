@@ -1,0 +1,22 @@
+{
+  "name": "udacity-bdnd-web-services",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "mocha ./test"
+  },
+  "dependencies": {
+    "bitcoinjs-message": "^2.0.0",
+    "cookie-parser": "~1.4.3",
+    "crypto-js": "^3.1.9-1",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "express-session": "^1.15.6",
+    "level": "^4.0.0",
+    "morgan": "~1.9.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
+}
