@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bitcoinMessage = require('bitcoinjs-message');
 
 const simpleChain = require('../app/simpleChain');
 
@@ -13,9 +14,6 @@ router.post('/requestValidation', function (req, res, next) {
   if (req.session[address]) {
     requestTimeStamp = req.session[address].requestTimeStamp;
     validationWindow = VALIDATION_WINDOW - (new Date().getTime() - requestTimeStamp) / 1000;
-    if (validationWindow < 0) {
-
-    }
   } else {
     requestTimeStamp = new Date().getTime();
     validationWindow = VALIDATION_WINDOW;
@@ -28,6 +26,42 @@ router.post('/requestValidation', function (req, res, next) {
     requestTimeStamp: requestTimeStamp,
     message: message,
     validationWindow: validationWindow,
+  };
+  res.send(JSON.stringify(response));
+});
+
+router.post('/message-signature/validate', function (req, res, next) {
+  const address = req.body.address;
+  const signature = req.body.signature;
+
+  let registerStar = false;
+  let requestTimeStamp = "";
+  let message = "";
+  let validationWindow = "";
+
+  if (req.session[address]) {
+    requestTimeStamp = req.session[address].requestTimeStamp;
+    validationWindow = VALIDATION_WINDOW - (new Date().getTime() - requestTimeStamp) / 1000;
+    message = address + ":" + requestTimeStamp + ":" + "starRegistry";
+    registerStar = bitcoinMessage.verify(message, address, signature);
+  } else {
+    registerStar = false;
+  }
+
+  // not valid then hide
+  if (!registerStar) {
+    requestTimeStamp = "";
+    message = "";
+  }
+
+  const response = {
+    registerStar: registerStar,
+    status: {
+      address: address,
+      requestTimeStamp: requestTimeStamp,
+      message: message,
+      validationWindow: validationWindow,
+    }
   };
   res.send(JSON.stringify(response));
 });
