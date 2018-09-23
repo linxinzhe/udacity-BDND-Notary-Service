@@ -30,30 +30,277 @@ npm test
 [express.js](https://expressjs.com/)
 
 ### API
-- GET Block Information
+##### POST Validate User Request
 
 Endpoint
 ```
-http://localhost:8000/block/{blockHeight}
+http://localhost:8000/requestValidation
 ```
-Request: None
+Request: 
+1. address: your account address
+```
+Request Example:
+{
+  "address": you account address
+}
+```
 
-Response: application/json Block
+Response: application/json, JSON Object
+1. address: your account address
+2. requestTimeStamp: time when you request
+3. message: message to sign
+4. validationWindow: valid time count down.
 ```
 Response Example:
-{"hash":"49cce61ec3e6ae664514d5fa5722d86069cf981318fc303750ce66032d0acff3","height":0,"body":"First block in the chain - Genesis block","time":"1530311457","previousBlockHash":""}
+{
+  "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+  "requestTimeStamp": "1532296090",
+  "message": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ:1532296090:starRegistry",
+  "validationWindow": 300
+}
 ```
 
-- POST add Block
+##### POST Validate User Message Signature
+
+Endpoint
+```
+http://localhost:8000/message-signature/validate
+```
+Request: 
+1. address: your account address
+2. signature: your message signature
+```
+Request Example:
+{
+  "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+  "signature": "H6ZrGrF0Y4rMGBMRT2+hHWGbThTIyhBS0dNKQRov9Yg6GgXcHxtO9GJN4nwD2yNXpnXHTWU9i+qdw5vpsooryLU="
+}
+```
+
+Response: application/json, JSON Object
+1. registerStar: your account address
+2. status: validation status
+    1. address: your account address
+    2. requestTimeStamp: time when you request
+    3. message: message to sign
+    4. validationWindow: valid time count down.
+    5. messageSignature: valid when grant access to register a star
+```
+Response Example:
+{
+  "registerStar": true,
+  "status": {
+    "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+    "requestTimeStamp": "1532296090",
+    "message": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ:1532296090:starRegistry",
+    "validationWindow": 193,
+    "messageSignature": "valid"
+  }
+}
+```
+
+##### POST Add Star Registration
 
 Endpoint
 ```
 http://localhost:8000/block
 ```
-Request: {"body":"block body contents"}
+Request: 
+1. address: your account address
+2. star: star information
+    1. dec: declination
+    2. ra: right ascension
+    3. story: star story
+    4. magnitude: [optional]
+    5. constellation: [optional]
+```
+Request Example:
+{
+  "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+  "star": {
+    "dec": "-26° 29' 24.9",
+    "ra": "16h 29m 1.0s",
+    "story": "Found star using https://www.google.com/sky/"
+  }
+}
+```
 
-Response: application/json Created Block 
+Response: application/json, JSON Object
+1. hash: block hash
+2. height: block height
+3. body: block body content
+    1. address: your account address
+    2. star: star information
+        1. dec: declination
+        2. ra: right ascension
+        3. story: star story
+        4. magnitude: magnitude
+        5. constellation: constellation
+4. time: block create time
+5. previousBlockHash: previous block hash
 ```
 Response Example:
-{"hash":"9327355aa9523e3e41ffc8b9cdb566591b259fd5ed017a16450c22f4b6a2c258","height":2,"body":"block body contents","time":"1531787866","previousBlockHash":"ffaffeb2330a12397acc069791323783ef1a1c8aab17ccf2d6788cdab0360b90"}
+{
+  "hash": "a59e9e399bc17c2db32a7a87379a8012f2c8e08dd661d7c0a6a4845d4f3ffb9f",
+  "height": 1,
+  "body": {
+    "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+    "star": {
+      "ra": "16h 29m 1.0s",
+      "dec": "-26° 29' 24.9",
+      "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f"
+    }
+  },
+  "time": "1532296234",
+  "previousBlockHash": "49cce61ec3e6ae664514d5fa5722d86069cf981318fc303750ce66032d0acff3"
+}
+```
+
+##### GET Star Block by Address
+
+Endpoint
+```
+http://localhost:8000/stars/address:{address}
+```
+Request: None 
+```
+Request Example:
+http://localhost:8000/stars/address:142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ
+```
+
+Response: application/json, JSON Array
+1. hash: block hash
+2. height: block height
+3. body: block body content
+    1. address: your account address
+    2. star: star information
+        1. dec: declination
+        2. ra: right ascension
+        3. story: star story
+        4. magnitude: magnitude
+        5. constellation: constellation
+4. time: block create time
+5. previousBlockHash: previous block hash
+```
+Response Example:
+[
+  {
+    "hash": "a59e9e399bc17c2db32a7a87379a8012f2c8e08dd661d7c0a6a4845d4f3ffb9f",
+    "height": 1,
+    "body": {
+      "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+      "star": {
+        "ra": "16h 29m 1.0s",
+        "dec": "-26° 29' 24.9",
+        "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+        "storyDecoded": "Found star using https://www.google.com/sky/"
+      }
+    },
+    "time": "1532296234",
+    "previousBlockHash": "49cce61ec3e6ae664514d5fa5722d86069cf981318fc303750ce66032d0acff3"
+  },
+  {
+    "hash": "6ef99fc533b9725bf194c18bdf79065d64a971fa41b25f098ff4dff29ee531d0",
+    "height": 2,
+    "body": {
+      "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+      "star": {
+        "ra": "17h 22m 13.1s",
+        "dec": "-27° 14' 8.2",
+        "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+        "storyDecoded": "Found star using https://www.google.com/sky/"
+      }
+    },
+    "time": "1532330848",
+    "previousBlockHash": "a59e9e399bc17c2db32a7a87379a8012f2c8e08dd661d7c0a6a4845d4f3ffb9f"
+  }
+]
+
+```
+##### GET Star Block by Hash
+
+Endpoint
+```
+http://localhost:8000/stars/hash:{hash}
+```
+Request: None 
+```
+Request Example:
+http://localhost:8000/stars/hash:a59e9e399bc17c2db32a7a87379a8012f2c8e08dd661d7c0a6a4845d4f3ffb9f
+```
+
+Response: application/json, JSON Object
+1. hash: block hash
+2. height: block height
+3. body: block body content
+    1. address: your account address
+    2. star: star information
+        1. dec: declination
+        2. ra: right ascension
+        3. story: star story
+        4. magnitude: magnitude
+        5. constellation: constellation
+4. time: block create time
+5. previousBlockHash: previous block hash
+```
+Response Example:
+{
+  "hash": "a59e9e399bc17c2db32a7a87379a8012f2c8e08dd661d7c0a6a4845d4f3ffb9f",
+  "height": 1,
+  "body": {
+    "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+    "star": {
+      "ra": "16h 29m 1.0s",
+      "dec": "-26° 29' 24.9",
+      "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+      "storyDecoded": "Found star using https://www.google.com/sky/"
+    }
+  },
+  "time": "1532296234",
+  "previousBlockHash": "49cce61ec3e6ae664514d5fa5722d86069cf981318fc303750ce66032d0acff3"
+}
+```
+
+##### GET Star Block by Height
+
+Endpoint
+```
+http://localhost:8000/block/{height}
+```
+Request: None 
+```
+Request Example:
+http://localhost:8000/block/1
+```
+
+Response: application/json, JSON Object
+1. hash: block hash
+2. height: block height
+3. body: block body content
+    1. address: your account address
+    2. star: star information
+        1. dec: declination
+        2. ra: right ascension
+        3. story: star story
+        4. magnitude: magnitude
+        5. constellation: constellation
+4. time: block create time
+5. previousBlockHash: previous block hash
+```
+Response Example:
+{
+  "hash": "a59e9e399bc17c2db32a7a87379a8012f2c8e08dd661d7c0a6a4845d4f3ffb9f",
+  "height": 1,
+  "body": {
+    "address": "142BDCeSGbXjWKaAnYXbMpZ6sbrSAo3DpZ",
+    "star": {
+      "ra": "16h 29m 1.0s",
+      "dec": "-26° 29' 24.9",
+      "story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f",
+      "storyDecoded": "Found star using https://www.google.com/sky/"
+    }
+  },
+  "time": "1532296234",
+  "previousBlockHash": "49cce61ec3e6ae664514d5fa5722d86069cf981318fc303750ce66032d0acff3"
+}
 ```
