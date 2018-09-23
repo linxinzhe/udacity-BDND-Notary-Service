@@ -49,6 +49,7 @@ router.post('/message-signature/validate', function (req, res, next) {
   let requestTimeStamp = "";
   let message = "";
   let validationWindow = "";
+  let messageSignature = "";
 
   if (req.session[address]) {
     requestTimeStamp = req.session[address].requestTimeStamp;
@@ -65,6 +66,10 @@ router.post('/message-signature/validate', function (req, res, next) {
     message = "";
   }
 
+  if (registerStar) {
+    messageSignature = "valid";
+  }
+
   const response = {
     registerStar: registerStar,
     status: {
@@ -72,6 +77,7 @@ router.post('/message-signature/validate', function (req, res, next) {
       requestTimeStamp: requestTimeStamp,
       message: message,
       validationWindow: validationWindow,
+      messageSignature: messageSignature,
     }
   };
   res.send(JSON.stringify(response));
