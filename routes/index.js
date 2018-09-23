@@ -7,6 +7,12 @@ const simpleChain = require('../app/simpleChain');
 const VALIDATION_WINDOW = 300;
 router.post('/requestValidation', function (req, res, next) {
   const address = req.body.address;
+  // check request param
+  if (!address) {
+    res.send({error: "JSON Format Error(require param): address"});
+    return
+  }
+
   let requestTimeStamp = "";
   let message = "";
   let validationWindow = "";
@@ -33,6 +39,11 @@ router.post('/requestValidation', function (req, res, next) {
 router.post('/message-signature/validate', function (req, res, next) {
   const address = req.body.address;
   const signature = req.body.signature;
+// check request param
+  if (!address || !signature) {
+    res.send({error: "JSON Format Error(require param): address, signature"});
+    return
+  }
 
   let registerStar = false;
   let requestTimeStamp = "";
