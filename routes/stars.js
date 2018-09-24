@@ -6,9 +6,9 @@ const simpleChain = require('../app/simpleChain');
 
 router.get('/address::address', function (req, res, next) {
   const address = req.params.address;
-  // check request param
+  // CHECK request param
   if (!address) {
-    res.send({error: "GET Format Error(require param): address"});
+    res.json({error: "GET Format Error(require param): address"});
     return;
   }
 
@@ -16,27 +16,34 @@ router.get('/address::address', function (req, res, next) {
   simpleChain.db.createReadStream().on('data', (data) => {
     const block = JSON.parse(data.value);
     if (block.body.address === address) {
+      const storyEncoded = block.body.star.story;
+      const storyDecoded = Buffer.from(storyEncoded, 'hex').toString('utf8');
+      block.body.star.storyDecoded = storyDecoded;
+
       response.push(block);
     }
   }).on('error', (err) => {
     console.log('Unable to read data stream!', err);
   }).on('close', () => {
-    res.send(response);
+    res.json(response);
   });
 });
 
 router.get('/hash::hash', function (req, res, next) {
   const hash = req.params.hash;
-  // check request param
+  // CHECK request param
   if (!hash) {
-    res.send({error: "GET Format Error(require param): hash"});
+    res.json({error: "GET Format Error(require param): hash"});
     return;
   }
 
   simpleChain.db.createReadStream().on('data', (data) => {
     const block = JSON.parse(data.value);
     if (block.hash === hash) {
-      res.send(block);
+      const storyEncoded = block.body.star.story;
+      const storyDecoded = Buffer.from(storyEncoded, 'hex').toString('utf8');
+      block.body.star.storyDecoded = storyDecoded;
+      res.json(block);
     }
   }).on('error', (err) => {
     console.log('Unable to read data stream!', err);

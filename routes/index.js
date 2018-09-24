@@ -7,9 +7,9 @@ const simpleChain = require('../app/simpleChain');
 const VALIDATION_WINDOW = 300;
 router.post('/requestValidation', function (req, res, next) {
   const address = req.body.address;
-  // check request param
+  // CHECK request param
   if (!address) {
-    res.send({error: "JSON Format Error(require param): address"});
+    res.json({error: "JSON Format Error(require param): address"});
     return
   }
 
@@ -33,16 +33,21 @@ router.post('/requestValidation', function (req, res, next) {
     message: message,
     validationWindow: validationWindow,
   };
-  res.send(JSON.stringify(response));
+  res.json(response);
 });
 
 router.post('/message-signature/validate', function (req, res, next) {
   const address = req.body.address;
   const signature = req.body.signature;
-// check request param
+// CHECK request param
   if (!address || !signature) {
-    res.send({error: "JSON Format Error(require param): address, signature"});
+    res.json({error: "JSON Format Error(require param): address, signature"});
     return
+  }
+// CHECK session
+  if (!req.session[address]) {
+    res.json({error: "Session Error(require requestValidation)"});
+    return;
   }
 
   let registerStar = false;
@@ -59,6 +64,8 @@ router.post('/message-signature/validate', function (req, res, next) {
   } else {
     registerStar = false;
   }
+
+  req.session[address]["registerStar"] = registerStar;
 
   // not valid then hide
   if (!registerStar) {
@@ -80,7 +87,7 @@ router.post('/message-signature/validate', function (req, res, next) {
       messageSignature: messageSignature,
     }
   };
-  res.send(JSON.stringify(response));
+  res.json(response);
 });
 
 
